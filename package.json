@@ -1,0 +1,16 @@
+{
+  "name": "diagnostico-deporte-antofa-documentos",
+  "private": true,
+  "type": "module",
+  "description": "Biblioteca documental pública del Diagnóstico del deporte en Antofagasta (F0-016). Repositorio independiente, hermano de WEB DIP — no contiene código de la aplicación principal.",
+  "scripts": {
+    "verify": "node scripts/verify-document-library.mjs",
+    "prepare-library": "node scripts/prepare-document-library.mjs",
+    "confirm": "node scripts/confirm-document-publication.mjs",
+    "test": "node --test \"scripts/__tests__/**/*.test.mjs\"",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.127.1"
+  }
+}

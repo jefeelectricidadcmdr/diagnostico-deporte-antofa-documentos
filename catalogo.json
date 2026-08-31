@@ -1,0 +1,36 @@
+[
+  {
+    "id": "documento-prueba-tecnica-f0-016",
+    "titulo": "Documento de prueba técnica F0-016",
+    "descripcion": "Documento mínimo, sin información institucional, usado exclusivamente para validar la infraestructura de la biblioteca documental (Puerta B de F0-016). No es contenido público real del Diagnóstico.",
+    "categoria": "recursos",
+    "componente": null,
+    "ruta": "recursos/documento-prueba-tecnica-f0-016.csv",
+    "nombreArchivo": "documento-prueba-tecnica-f0-016.csv",
+    "extension": "csv",
+    "mimeType": "text/csv",
+    "tamañoBytes": 117,
+    "version": 1,
+    "estado": "APROBADO_PARA_PUBLICAR",
+    "sha256": "331d42c546e3744c11f840fea512a68d7c30328870054f6a293cb578f9747562",
+    "visible": true,
+    "orden": 1
+  },
+  {
+    "id": "documento-borrador-prueba-f0-016",
+    "titulo": "Documento borrador de prueba F0-016",
+    "descripcion": "Documento en estado BORRADOR usado exclusivamente para verificar que un borrador nunca llega a dist-public/ ni queda accesible por URL pública. No es contenido público real del Diagnóstico.",
+    "categoria": "recursos",
+    "componente": null,
+    "ruta": "recursos/documento-borrador-prueba-f0-016.csv",
+    "nombreArchivo": "documento-borrador-prueba-f0-016.csv",
+    "extension": "csv",
+    "mimeType": "text/csv",
+    "tamañoBytes": 133,
+    "version": 1,
+    "estado": "BORRADOR",
+    "sha256": "b1f0077771d18170a10da301f7bc9569a8212db63e715e197f1c2191b3253fa2",
+    "visible": false,
+    "orden": 2
+  }
+]

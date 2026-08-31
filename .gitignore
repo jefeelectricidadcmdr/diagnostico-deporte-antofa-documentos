@@ -1,0 +1,18 @@
+# Artefacto derivado — siempre regenerable desde la fuente maestra (Análisis F0-016, Sección 6-bis).
+# Nunca es fuente de verdad: no se versiona.
+/dist-public/
+
+# Dependencias de los scripts de utilidad (verify/prepare/confirm), no del contenido publicado.
+/node_modules/
+
+# Secretos y configuración local — nunca en Git.
+.env
+.env.*
+.dev.vars
+.wrangler/
+
+# Temporales de SO/editor.
+Thumbs.db
+.DS_Store
+*.swp
+*~
