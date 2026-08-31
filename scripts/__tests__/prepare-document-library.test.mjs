@@ -1,3 +1,13 @@
+// Casos exigidos por la corrección estructural de la semántica de "estado" entre el
+// catálogo maestro y el catálogo público generado (ver comentario de cabecera de
+// prepare-document-library.mjs):
+//   CASO 1: maestro=APROBADO_PARA_PUBLICAR + prepare -> maestro sigue igual, público=PUBLICADO
+//   CASO 4: maestro=PUBLICADO (ya vigente) -> público=PUBLICADO
+//   CASO 5: BORRADOR -> no aparece en dist-public
+//   CASO 6: RETIRADO -> no aparece en dist-public
+// (CASO 2 y CASO 3 — fallo/éxito de confirm-document-publication sobre el catálogo
+// maestro — están cubiertos en confirm-document-publication.test.mjs.)
+
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
@@ -24,7 +34,7 @@ async function existeArchivo(p) {
   }
 }
 
-test("prepararBiblioteca incluye PUBLICADO vigente + candidato APROBADO_PARA_PUBLICAR, excluye BORRADOR", () =>
+test("CASO 1: candidato APROBADO_PARA_PUBLICAR -> maestro sin cambios, público=PUBLICADO; BORRADOR excluido", () =>
   conFixture(async (rootDir) => {
     const publicado = await escribirArchivo(rootDir, "recursos/publicado.csv", "ya publicado");
     const candidato = await escribirArchivo(rootDir, "recursos/candidato.csv", "candidato de esta corrida");
@@ -46,12 +56,40 @@ test("prepararBiblioteca incluye PUBLICADO vigente + candidato APROBADO_PARA_PUB
     const catalogoPublico = JSON.parse(await readFile(path.join(resultado.distDir, "catalogo.json"), "utf8"));
     assert.deepEqual(new Set(catalogoPublico.map((r) => r.id)), new Set(["publicado", "candidato"]));
 
-    // El catálogo maestro NO cambia — el candidato sigue APROBADO_PARA_PUBLICAR.
+    // CASO 1 — el catálogo PÚBLICO representa al candidato como PUBLICADO...
+    const candidatoPublico = catalogoPublico.find((r) => r.id === "candidato");
+    assert.equal(candidatoPublico.estado, "PUBLICADO");
+    // CASO 4 — ...y el ya-vigente PUBLICADO se mantiene PUBLICADO en el público.
+    const publicadoPublico = catalogoPublico.find((r) => r.id === "publicado");
+    assert.equal(publicadoPublico.estado, "PUBLICADO");
+
+    // ...pero el catálogo MAESTRO NO cambia — el candidato sigue APROBADO_PARA_PUBLICAR
+    // hasta que confirm-document-publication confirme el deployment real.
     const maestro = await readCatalogo(rootDir);
     const candidatoMaestro = maestro.find((r) => r.id === "candidato");
     assert.equal(candidatoMaestro.estado, "APROBADO_PARA_PUBLICAR");
+    const publicadoMaestro = maestro.find((r) => r.id === "publicado");
+    assert.equal(publicadoMaestro.estado, "PUBLICADO");
 
     assert.ok(await existeArchivo(path.join(resultado.distDir, "index.html")));
+  }));
+
+test("CASO 6: RETIRADO no aparece en dist-public ni en su catálogo público", () =>
+  conFixture(async (rootDir) => {
+    const publicado = await escribirArchivo(rootDir, "recursos/publicado.csv", "vigente");
+    const retirado = await escribirArchivo(rootDir, "recursos/retirado.csv", "ya no debe exponerse");
+
+    await escribirCatalogo(rootDir, [
+      { id: "publicado", titulo: "Publicado", categoria: "recursos", ruta: "recursos/publicado.csv", nombreArchivo: "publicado.csv", extension: "csv", mimeType: "text/csv", tamañoBytes: publicado.tamañoBytes, version: 1, estado: "PUBLICADO", fechaPublicacion: "2026-01-01", sha256: publicado.sha256, visible: true },
+      { id: "retirado", titulo: "Retirado", categoria: "recursos", ruta: "recursos/retirado.csv", nombreArchivo: "retirado.csv", extension: "csv", mimeType: "text/csv", tamañoBytes: retirado.tamañoBytes, version: 1, estado: "RETIRADO", fechaPublicacion: "2026-01-01", sha256: retirado.sha256, visible: false },
+    ]);
+
+    const resultado = await prepararBiblioteca(rootDir, []);
+    assert.deepEqual(resultado.incluidos, ["publicado"]);
+    assert.ok(!(await existeArchivo(path.join(resultado.distDir, "recursos/retirado.csv"))));
+
+    const catalogoPublico = JSON.parse(await readFile(path.join(resultado.distDir, "catalogo.json"), "utf8"));
+    assert.ok(!catalogoPublico.some((r) => r.id === "retirado"));
   }));
 
 test("prepararBiblioteca sin candidatos regenera solo lo ya PUBLICADO", () =>

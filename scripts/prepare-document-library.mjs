@@ -1,9 +1,21 @@
 #!/usr/bin/env node
 // prepare-document-library — genera el artefacto publicable CANDIDATO (dist-public/)
-// a partir de la fuente maestra. NUNCA modifica catalogo.json maestro — nunca escribe
-// estado="PUBLICADO". Esa promoción es responsabilidad exclusiva de
-// confirm-document-publication, ejecutada después de un `wrangler deploy` exitoso y de
-// verificar la URL pública real.
+// a partir de la fuente maestra. NUNCA modifica catalogo.json MAESTRO — nunca escribe
+// estado="PUBLICADO" ahí. Esa promoción del catálogo maestro es responsabilidad
+// exclusiva de confirm-document-publication, ejecutada después de un `wrangler deploy`
+// exitoso y de verificar la URL pública real.
+//
+// Distinción estructural (corrección — el catálogo maestro y el catálogo público NO
+// son el mismo documento y no tienen por qué compartir el campo "estado" tal cual):
+// el catálogo DERIVADO (`dist-public/catalogo.json`) describe el contenido que este
+// artefacto efectivamente expone al público — por definición, todo lo que entra a
+// dist-public/ está siendo publicado (lo ya PUBLICADO vigente, o el/los candidato(s)
+// de esta corrida que están a punto de estarlo). Por eso, en el catálogo público, el
+// candidato de la corrida se representa con `estado: "PUBLICADO"` — aunque en el
+// catálogo MAESTRO siga siendo `APROBADO_PARA_PUBLICAR` hasta que
+// confirm-document-publication confirme el deployment real. Este documento derivado
+// nunca se lee de vuelta como fuente de verdad — es un artefacto de un solo uso por
+// publicación, regenerado desde cero en cada corrida.
 //
 // Diseño: TAREA_F0-016 Sección 8-bis, ANALISIS_F0-016 Sección 6-bis (repo WEB DIP).
 //
@@ -59,7 +71,11 @@ export async function prepararBiblioteca(rootDir, candidatoIds = []) {
     // urlExterna: no hay archivo que copiar, solo entra en el catálogo público.
   }
 
-  const catalogoPublico = seleccionados.map((r) => ({ ...r }));
+  // El catálogo público representa como PUBLICADO tanto lo ya PUBLICADO vigente como
+  // el/los candidato(s) de esta corrida — nunca modifica el catálogo maestro (arriba).
+  const catalogoPublico = seleccionados.map((r) =>
+    candidatoSet.has(r.id) ? { ...r, estado: "PUBLICADO" } : { ...r },
+  );
   await writeFile(
     path.join(distDir, "catalogo.json"),
     JSON.stringify(catalogoPublico, null, 2) + "\n",

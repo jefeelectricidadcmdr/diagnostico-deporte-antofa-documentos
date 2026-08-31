@@ -1,3 +1,9 @@
+// CASO 2 (deployment/confirmación fallida -> maestro permanece APROBADO_PARA_PUBLICAR)
+// y CASO 3 (confirmación real correcta -> maestro pasa a PUBLICADO) de la corrección
+// estructural de prepare-document-library.mjs están cubiertos por los tests de este
+// archivo: "URL que responde 404..." (CASO 2) y "candidato con URL pública
+// verificada..." (CASO 3).
+
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { confirmarPublicacion } from "../confirm-document-publication.mjs";
