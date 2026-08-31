@@ -11,10 +11,11 @@
     "mimeType": "text/csv",
     "tamañoBytes": 117,
     "version": 1,
-    "estado": "APROBADO_PARA_PUBLICAR",
+    "estado": "PUBLICADO",
     "sha256": "331d42c546e3744c11f840fea512a68d7c30328870054f6a293cb578f9747562",
     "visible": true,
-    "orden": 1
+    "orden": 1,
+    "fechaPublicacion": "2026-08-31T16:09:49.730Z"
   },
   {
     "id": "documento-borrador-prueba-f0-016",
